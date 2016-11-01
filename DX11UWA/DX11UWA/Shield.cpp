@@ -1,5 +1,5 @@
-﻿#include "pch.h"
-#include "Sample3DSceneRenderer.h"
+#include "pch.h"
+#include "Shield.h"
 #include "DDSTextureLoader.h"
 #include "..\Common\DirectXHelper.h"
 
@@ -11,7 +11,7 @@ using namespace DirectX;
 using namespace Windows::Foundation;
 
 // Loads vertex and pixel shaders from files and instantiates the cube geometry.
-Sample3DSceneRenderer::Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
+Shield::Shield(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
 	m_loadingComplete(false),
 	m_degreesPerSecond(45),
 	m_indexCount(0),
@@ -28,7 +28,7 @@ Sample3DSceneRenderer::Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceRes
 }
 
 // Initializes view parameters when the window size changes.
-void Sample3DSceneRenderer::CreateWindowSizeDependentResources(void)
+void Shield::CreateWindowSizeDependentResources(void)
 {
 	Size outputSize = m_deviceResources->GetOutputSize();
 	float aspectRatio = outputSize.Width / outputSize.Height;
@@ -41,13 +41,6 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources(void)
 		fovAngleY *= 2.0f;
 	}
 
-	// Note that the OrientationTransform3D matrix is post-multiplied here
-	// in order to correctly orient the scene to match the display orientation.
-	// This post-multiplication step is required for any draw calls that are
-	// made to the swap chain render target. For draw calls to other targets,
-	// this transform should not be applied.
-
-	// This sample makes use of a right-handed coordinate system using row-major matrices.
 	XMMATRIX perspectiveMatrix = XMMatrixPerspectiveFovLH(fovAngleY, aspectRatio, 0.01f, 100.0f);
 
 	XMFLOAT4X4 orientation = m_deviceResources->GetOrientationTransform3D();
@@ -66,7 +59,7 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources(void)
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
-void Sample3DSceneRenderer::Update(DX::StepTimer const& timer)
+void Shield::Update(DX::StepTimer const& timer)
 {
 	if (!m_tracking)
 	{
@@ -80,18 +73,18 @@ void Sample3DSceneRenderer::Update(DX::StepTimer const& timer)
 
 
 	// Update or move camera here
-	UpdateCamera(timer, 7.0f, 0.75f);
+	UpdateCamera(timer, 1.0f, 0.75f);
 
 }
 
 // Rotate the 3D cube model a set amount of radians.
-void Sample3DSceneRenderer::Rotate(float radians)
+void Shield::Rotate(float radians)
 {
 	// Prepare to pass the updated model matrix to the shader
 	XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(XMMatrixRotationY(radians)));
 }
 
-void Sample3DSceneRenderer::UpdateCamera(DX::StepTimer const& timer, float const moveSpd, float const rotSpd)
+void Shield::UpdateCamera(DX::StepTimer const& timer, float const moveSpd, float const rotSpd)
 {
 	const float delta_time = (float)timer.GetElapsedSeconds();
 
@@ -170,29 +163,29 @@ void Sample3DSceneRenderer::UpdateCamera(DX::StepTimer const& timer, float const
 
 }
 
-void Sample3DSceneRenderer::SetKeyboardButtons(const char* list)
+void Shield::SetKeyboardButtons(const char* list)
 {
 	memcpy_s(m_kbuttons, sizeof(m_kbuttons), list, sizeof(m_kbuttons));
 }
 
-void Sample3DSceneRenderer::SetMousePosition(const Windows::UI::Input::PointerPoint^ pos)
+void Shield::SetMousePosition(const Windows::UI::Input::PointerPoint^ pos)
 {
 	m_currMousePos = const_cast<Windows::UI::Input::PointerPoint^>(pos);
 }
 
-void Sample3DSceneRenderer::SetInputDeviceData(const char* kb, const Windows::UI::Input::PointerPoint^ pos)
+void Shield::SetInputDeviceData(const char* kb, const Windows::UI::Input::PointerPoint^ pos)
 {
 	SetKeyboardButtons(kb);
 	SetMousePosition(pos);
 }
 
-void DX11UWA::Sample3DSceneRenderer::StartTracking(void)
+void DX11UWA::Shield::StartTracking(void)
 {
 	m_tracking = true;
 }
 
 // When tracking, the 3D cube can be rotated around its Y axis by tracking pointer position relative to the output screen width.
-void Sample3DSceneRenderer::TrackingUpdate(float positionX)
+void Shield::TrackingUpdate(float positionX)
 {
 	if (m_tracking)
 	{
@@ -201,13 +194,13 @@ void Sample3DSceneRenderer::TrackingUpdate(float positionX)
 	}
 }
 
-void Sample3DSceneRenderer::StopTracking(void)
+void Shield::StopTracking(void)
 {
 	m_tracking = false;
 }
 
 // Renders one frame using the vertex and pixel shaders.
-void Sample3DSceneRenderer::Render(void)
+void Shield::Render(void)
 {
 	// Loading is asynchronous. Only draw geometry after it's loaded.
 	if (!m_loadingComplete)
@@ -223,8 +216,8 @@ void Sample3DSceneRenderer::Render(void)
 	context->UpdateSubresource1(m_constantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
 
 	// Each vertex is one instance of the VertexPositionColor struct.
-	UINT stride = sizeof(VertexPositionColor);
-	//UINT stride = sizeof(VertexPositionUVNormal);
+	//UINT stride = sizeof(VertexPositionColor);
+	UINT stride = sizeof(VertexPositionUVNormal);
 	UINT offset = 0;
 	context->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
 
@@ -250,7 +243,7 @@ void Sample3DSceneRenderer::Render(void)
 	context->DrawIndexed(m_indexCount, 0, 0);
 }
 
-void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
+void Shield::CreateDeviceDependentResources(void)
 {
 	// Load shaders asynchronously.
 	auto loadVSTask = DX::ReadDataAsync(L"SampleVertexShader.cso");
@@ -263,8 +256,9 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 
 		static const D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "UV", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "UV", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
 
 		DX::ThrowIfFailed(m_deviceResources->GetD3DDevice()->CreateInputLayout(vertexDesc, ARRAYSIZE(vertexDesc), &fileData[0], fileData.size(), &m_inputLayout));
@@ -282,60 +276,27 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 	auto createCubeTask = (createPSTask && createVSTask).then([this]()
 	{
 		// Load mesh vertices. Each vertex has a position and a color.
-		static const VertexPositionColor cubeVertices[] =
-		{
-			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f)},
-			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f)},
-			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f)},
-			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f, 1.0f, 1.0f)},
-			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f)},
-			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(1.0f, 0.0f, 1.0f)},
-			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f)},
-			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f)},
-		};
+		Mesh m;
+		m.LoadThatMesh("Assets/Horned_ShieldShape.mesh");
 
 		D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
-		vertexBufferData.pSysMem = cubeVertices;
+		vertexBufferData.pSysMem = m.VPUVN.data();
 		vertexBufferData.SysMemPitch = 0;
 		vertexBufferData.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(cubeVertices), D3D11_BIND_VERTEX_BUFFER);
+		CD3D11_BUFFER_DESC vertexBufferDesc(m.VPUVN.size() * sizeof(VertexPositionUVNormal), D3D11_BIND_VERTEX_BUFFER);
 		DX::ThrowIfFailed(m_deviceResources->GetD3DDevice()->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &m_vertexBuffer));
 
-		// Load mesh indices. Each trio of indices represents
-		// a triangle to be rendered on the screen.
-		// For example: 0,2,1 means that the vertices with indexes
-		// 0, 2 and 1 from the vertex buffer compose the 
-		// first triangle of this mesh.
-		static const unsigned short cubeIndices[] =
-		{
-			0,1,2, // -x
-			1,3,2,
-		
-			4,6,5, // +x
-			5,6,7,
-		
-			0,5,1, // -y
-			0,4,5,
-		
-			2,7,6, // +y
-			2,3,7,
-		
-			0,6,4, // -z
-			0,2,6,
-		
-			1,7,3, // +z
-			1,5,7,
-		};
-
-		m_indexCount = ARRAYSIZE(cubeIndices);
+		m_indexCount = m.VertexIndices.size();
 
 		D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
-		indexBufferData.pSysMem = cubeIndices;
+		indexBufferData.pSysMem = m.VertexIndices.data();
 		indexBufferData.SysMemPitch = 0;
 		indexBufferData.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC indexBufferDesc(sizeof(cubeIndices), D3D11_BIND_INDEX_BUFFER);
+		CD3D11_BUFFER_DESC indexBufferDesc(m.VertexIndices.size() * sizeof(unsigned short), D3D11_BIND_INDEX_BUFFER);
 		DX::ThrowIfFailed(m_deviceResources->GetD3DDevice()->CreateBuffer(&indexBufferDesc, &indexBufferData, &m_indexBuffer));
 
+		//For Texture 
+		CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/shield1.dds", (ID3D11Resource **) m_texture2D.Get(), m_SRV.GetAddressOf());
 	});
 
 	// Once the cube is loaded, the object is ready to be rendered.
@@ -345,7 +306,7 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 	});
 }
 
-void Sample3DSceneRenderer::ReleaseDeviceDependentResources(void)
+void Shield::ReleaseDeviceDependentResources(void)
 {
 	m_loadingComplete = false;
 	m_vertexShader.Reset();

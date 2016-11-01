@@ -70,6 +70,9 @@
     <ClCompile Include="DDSTextureLoader.cpp">
       <Filter>Content\Source</Filter>
     </ClCompile>
+    <ClCompile Include="Shield.cpp">
+      <Filter>Content\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Content\Sample3DSceneRenderer.h">
@@ -106,6 +109,9 @@
       <Filter>Content\Headers</Filter>
     </ClInclude>
     <ClInclude Include="DDSTextureLoader.h">
+      <Filter>Content\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Shield.h">
       <Filter>Content\Headers</Filter>
     </ClInclude>
   </ItemGroup>

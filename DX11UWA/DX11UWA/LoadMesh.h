@@ -14,9 +14,8 @@ struct Mesh
 	const char * TextureName;
 	std::vector<VertexPositionUVNormal> VPUVN;
 	std::vector<unsigned short> VertexIndices;
-};
 
-void LoadThatMesh(const char *path, Mesh & model)
+void Mesh::LoadThatMesh(const char *path)
 {
 	std::ifstream Input;
 	Input.open(path, std::ios_base::binary);
@@ -34,12 +33,12 @@ void LoadThatMesh(const char *path, Mesh & model)
 		{
 			unsigned int TextureNameLength2 = 0;
 			Input.read((char*)&TextureNameLength2, sizeof(TextureNameLength2));
-			char* TextureName = new char[TextureNameLength2];
-			Input.read(TextureName, TextureNameLength2);
-			std::string Name = TextureName;
+			char* TName = new char[TextureNameLength2];
+			Input.read(TName, TextureNameLength2);
+			std::string Name = TName;
 			unsigned int pos = Name.find_last_of("/\\");
 			Name = Name.substr(pos + 1);
-			model.TextureName = Name.c_str();
+			TextureName = Name.c_str();
 		}
 
 		unsigned int numVerts = 0;
@@ -65,7 +64,7 @@ void LoadThatMesh(const char *path, Mesh & model)
 			Vertex.uv.w = 1;
 			Vertex.uv.y = 1 - Vertex.uv.y;
 
-			model.VPUVN.push_back(Vertex);
+			VPUVN.push_back(Vertex);
 		}
 
 		unsigned int Triangles = 0;
@@ -74,10 +73,12 @@ void LoadThatMesh(const char *path, Mesh & model)
 		{
 			unsigned int temp = 0;
 			Input.read((char*)&temp, sizeof(temp));
-			model.VertexIndices.push_back(temp);
+			VertexIndices.push_back(temp);
 		}
 		delete MeshName;
 	}
 }
+};
+
 
 
