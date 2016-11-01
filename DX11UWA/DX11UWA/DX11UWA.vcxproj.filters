@@ -67,6 +67,9 @@
     <ClCompile Include="Common\DeviceResources.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
+    <ClCompile Include="DDSTextureLoader.cpp">
+      <Filter>Content\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Content\Sample3DSceneRenderer.h">
@@ -102,6 +105,9 @@
     <ClInclude Include="LoadMesh.h">
       <Filter>Content\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="DDSTextureLoader.h">
+      <Filter>Content\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\StoreLogo.png">
@@ -113,6 +119,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="DX11UWA_TemporaryKey.pfx" />
+    <None Include="Assets\Barrel.obj" />
+    <None Include="Assets\CHEST.mesh" />
+    <None Include="Assets\Shield.mesh" />
+    <None Include="Assets\Horned_ShieldShape.mesh" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Content\SamplePixelShader.hlsl">
@@ -121,8 +131,5 @@
     <FxCompile Include="Content\SampleVertexShader.hlsl">
       <Filter>Content\Shaders</Filter>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="Assets\Barrel.obj" />
   </ItemGroup>
 </Project>
