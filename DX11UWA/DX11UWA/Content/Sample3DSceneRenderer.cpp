@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "Sample3DSceneRenderer.h"
-
+#include "DDSTextureLoader.h"
 #include "..\Common\DirectXHelper.h"
 
 #include "LoadMesh.h"
@@ -221,21 +221,31 @@ void Sample3DSceneRenderer::Render(void)
 
 	// Prepare the constant buffer to send it to the graphics device.
 	context->UpdateSubresource1(m_constantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
+
 	// Each vertex is one instance of the VertexPositionColor struct.
 	//UINT stride = sizeof(VertexPositionColor);
 	UINT stride = sizeof(VertexPositionUVNormal);
 	UINT offset = 0;
 	context->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
+
 	// Each index is one 16-bit unsigned integer (short).
 	context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->IASetInputLayout(m_inputLayout.Get());
+
 	// Attach our vertex shader.
 	context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
+
 	// Send the constant buffer to the graphics device.
 	context->VSSetConstantBuffers1(0, 1, m_constantBuffer.GetAddressOf(), nullptr, nullptr);
+
 	// Attach our pixel shader.
 	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+
+	//For Texture
+	ID3D11ShaderResourceView* textViews[] = { m_SRV.Get() };
+	context->PSSetShaderResources(0, 1, textViews);
+
 	// Draw the objects.
 	context->DrawIndexed(m_indexCount, 0, 0);
 }
@@ -253,9 +263,9 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 
 		static const D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "UV", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "UV", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
 
 		DX::ThrowIfFailed(m_deviceResources->GetD3DDevice()->CreateInputLayout(vertexDesc, ARRAYSIZE(vertexDesc), &fileData[0], fileData.size(), &m_inputLayout));
@@ -286,19 +296,15 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 		//};
 
 		Mesh m;
-		//LoadThatMesh("Assets/Barrel.obj", m);
-		//LoadMeshFromFile("Assets/Shield.mesh", m);
-		//LoadThatMesh("Assets/Shield.mesh", m);
-		//LoadThatMesh("Assets/CHEST.mesh", m);
 		LoadThatMesh("Assets/Horned_ShieldShape.mesh", m);
 
 		D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
 		//vertexBufferData.pSysMem = cubeVertices;
-		vertexBufferData.pSysMem = m.VertPosUVNorms.data();
+		vertexBufferData.pSysMem = m.VPUVN.data();
 		vertexBufferData.SysMemPitch = 0;
 		vertexBufferData.SysMemSlicePitch = 0;
 		//CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(cubeVertices), D3D11_BIND_VERTEX_BUFFER);
-		CD3D11_BUFFER_DESC vertexBufferDesc(m.VertPosUVNorms.size() * sizeof(VertexPositionUVNormal), D3D11_BIND_VERTEX_BUFFER);
+		CD3D11_BUFFER_DESC vertexBufferDesc(m.VPUVN.size() * sizeof(VertexPositionUVNormal), D3D11_BIND_VERTEX_BUFFER);
 		DX::ThrowIfFailed(m_deviceResources->GetD3DDevice()->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &m_vertexBuffer));
 
 		// Load mesh indices. Each trio of indices represents
@@ -328,16 +334,19 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 		//};
 
 		//m_indexCount = ARRAYSIZE(cubeIndices);
-		m_indexCount = m.VertexIndecies.size();
+		m_indexCount = m.VertexIndices.size();
 
 		D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
 		//indexBufferData.pSysMem = cubeIndices;
-		indexBufferData.pSysMem = m.VertexIndecies.data();
+		indexBufferData.pSysMem = m.VertexIndices.data();
 		indexBufferData.SysMemPitch = 0;
 		indexBufferData.SysMemSlicePitch = 0;
 		//CD3D11_BUFFER_DESC indexBufferDesc(sizeof(cubeIndices), D3D11_BIND_INDEX_BUFFER);
-		CD3D11_BUFFER_DESC indexBufferDesc(m.VertexIndecies.size() * sizeof(unsigned short), D3D11_BIND_INDEX_BUFFER);
+		CD3D11_BUFFER_DESC indexBufferDesc(m.VertexIndices.size() * sizeof(unsigned short), D3D11_BIND_INDEX_BUFFER);
 		DX::ThrowIfFailed(m_deviceResources->GetD3DDevice()->CreateBuffer(&indexBufferDesc, &indexBufferData, &m_indexBuffer));
+
+		//For Texture 
+		CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/shield1.dds", (ID3D11Resource **) m_texture2D.Get(), m_SRV.GetAddressOf());
 	});
 
 	// Once the cube is loaded, the object is ready to be rendered.
