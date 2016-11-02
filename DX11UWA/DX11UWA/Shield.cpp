@@ -77,7 +77,7 @@ void Shield::Update(DX::StepTimer const& timer)
 
 }
 
-// Rotate the 3D cube model a set amount of radians.
+//Rotate the 3D cube model a set amount of radians.
 void Shield::Rotate(float radians)
 {
 	// Prepare to pass the updated model matrix to the shader
@@ -277,7 +277,8 @@ void Shield::CreateDeviceDependentResources(void)
 	{
 		// Load mesh vertices. Each vertex has a position and a color.
 		Mesh m;
-		m.LoadThatMesh("Assets/Horned_ShieldShape.mesh");
+		//m.LoadThatMesh("Assets/Horned_ShieldShape.mesh");
+		m.LoadThatMesh("Assets/mapleShape.mesh");
 
 		D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
 		vertexBufferData.pSysMem = m.VPUVN.data();
@@ -296,7 +297,8 @@ void Shield::CreateDeviceDependentResources(void)
 		DX::ThrowIfFailed(m_deviceResources->GetD3DDevice()->CreateBuffer(&indexBufferDesc, &indexBufferData, &m_indexBuffer));
 
 		//For Texture 
-		CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/shield1.dds", (ID3D11Resource **) m_texture2D.Get(), m_SRV.GetAddressOf());
+		//CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/shield1.dds", (ID3D11Resource **) m_texture2D.Get(), m_SRV.GetAddressOf());
+		CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/mapletree.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
 	});
 
 	// Once the cube is loaded, the object is ready to be rendered.

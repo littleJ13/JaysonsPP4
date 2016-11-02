@@ -63,7 +63,6 @@ namespace DX11UWA
 
 		// Matrix data member for the camera
 		DirectX::XMFLOAT4X4 m_camera;
-
 	};
 }
 

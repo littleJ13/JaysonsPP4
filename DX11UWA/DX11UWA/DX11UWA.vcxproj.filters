@@ -114,21 +114,21 @@
     <ClInclude Include="Shield.h">
       <Filter>Content\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\StoreLogo.png">
       <Filter>Assets</Filter>
     </Image>
     <Image Include="Assets\shield1.dds" />
+    <Image Include="Assets\mapletree.dds" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DX11UWA_TemporaryKey.pfx" />
-    <None Include="Assets\Barrel.obj" />
-    <None Include="Assets\CHEST.mesh" />
-    <None Include="Assets\Shield.mesh" />
+    <None Include="Assets\mapleShape.mesh" />
     <None Include="Assets\Horned_ShieldShape.mesh" />
   </ItemGroup>
   <ItemGroup>
@@ -138,5 +138,11 @@
     <FxCompile Include="Content\SampleVertexShader.hlsl">
       <Filter>Content\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="CubePixelShader.hlsl">
+      <Filter>Content\Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DX11UWA.rc" />
   </ItemGroup>
 </Project>

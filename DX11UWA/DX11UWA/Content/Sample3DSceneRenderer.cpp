@@ -78,10 +78,8 @@ void Sample3DSceneRenderer::Update(DX::StepTimer const& timer)
 		Rotate(radians);
 	}
 
-
 	// Update or move camera here
 	UpdateCamera(timer, 7.0f, 0.75f);
-
 }
 
 // Rotate the 3D cube model a set amount of radians.
@@ -224,7 +222,6 @@ void Sample3DSceneRenderer::Render(void)
 
 	// Each vertex is one instance of the VertexPositionColor struct.
 	UINT stride = sizeof(VertexPositionColor);
-	//UINT stride = sizeof(VertexPositionUVNormal);
 	UINT offset = 0;
 	context->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
 
@@ -242,10 +239,6 @@ void Sample3DSceneRenderer::Render(void)
 	// Attach our pixel shader.
 	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 
-	//For Texture
-	ID3D11ShaderResourceView* textViews[] = { m_SRV.Get() };
-	context->PSSetShaderResources(0, 1, textViews);
-
 	// Draw the objects.
 	context->DrawIndexed(m_indexCount, 0, 0);
 }
@@ -254,7 +247,7 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 {
 	// Load shaders asynchronously.
 	auto loadVSTask = DX::ReadDataAsync(L"SampleVertexShader.cso");
-	auto loadPSTask = DX::ReadDataAsync(L"SamplePixelShader.cso");
+	auto loadPSTask = DX::ReadDataAsync(L"CubePixelShader.cso");
 
 	// After the vertex shader file is loaded, create the shader and input layout.
 	auto createVSTask = loadVSTask.then([this](const std::vector<byte>& fileData)
