@@ -11,14 +11,14 @@ namespace DX11UWA
 	class Shield
 	{
 	public:
-		Shield(const std::shared_ptr<DX::DeviceResources>& deviceResources);
+		Shield(const std::shared_ptr<DX::DeviceResources>& deviceResources, int number = 1);
 		void CreateDeviceDependentResources(void);
 		void CreateWindowSizeDependentResources(void);
 		void ReleaseDeviceDependentResources(void);
-		void Update(DX::StepTimer const& timer);
+		void Update(DX::StepTimer const& timer, int modify = 0);
 		void Render(void);
 		void StartTracking(void);
-		void TrackingUpdate(float positionX);
+		void TrackingUpdate(float positionX, int modify);
 		void StopTracking(void);
 		inline bool IsTracking(void) { return m_tracking; }
 
@@ -29,10 +29,11 @@ namespace DX11UWA
 
 
 	private:
-		void Rotate(float radians);
+		void Rotate(float radians, int modify);
 		void UpdateCamera(DX::StepTimer const& timer, float const moveSpd, float const rotSpd);
 
 	private:
+		int ModelCount;
 		// Cached pointer to device resources.
 		std::shared_ptr<DX::DeviceResources> m_deviceResources;
 

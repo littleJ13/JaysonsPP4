@@ -11,9 +11,10 @@ using namespace DirectX;
 using namespace Windows::Foundation;
 
 // Loads vertex and pixel shaders from files and instantiates the cube geometry.
-Shield::Shield(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
+Shield::Shield(const std::shared_ptr<DX::DeviceResources>& deviceResources, int number) :
 	m_loadingComplete(false),
 	m_degreesPerSecond(45),
+	ModelCount(number),
 	m_indexCount(0),
 	m_tracking(false),
 	m_deviceResources(deviceResources)
@@ -59,7 +60,7 @@ void Shield::CreateWindowSizeDependentResources(void)
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
-void Shield::Update(DX::StepTimer const& timer)
+void Shield::Update(DX::StepTimer const& timer, int modify)
 {
 	if (!m_tracking)
 	{
@@ -68,20 +69,27 @@ void Shield::Update(DX::StepTimer const& timer)
 		double totalRotation = timer.GetTotalSeconds() * radiansPerSecond;
 		float radians = static_cast<float>(fmod(totalRotation, XM_2PI));
 
-		Rotate(radians);
+		Rotate(radians, modify);
 	}
 
 
 	// Update or move camera here
-	UpdateCamera(timer, 1.0f, 0.75f);
+	UpdateCamera(timer, 7.0f, 0.75f);
 
 }
 
 //Rotate the 3D cube model a set amount of radians.
-void Shield::Rotate(float radians)
+void Shield::Rotate(float radians, int modify)
 {
 	// Prepare to pass the updated model matrix to the shader
-	XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(XMMatrixRotationY(radians)));
+	if (modify == 0)
+	{
+		XMStoreFloat4x4(&m_constantBufferData.model[modify], XMMatrixTranspose(XMMatrixRotationY(radians)));
+	}
+	else
+	{
+		XMStoreFloat4x4(&m_constantBufferData.model[modify], XMMatrixTranspose(XMMatrixRotationZ(radians)));
+	}
 }
 
 void Shield::UpdateCamera(DX::StepTimer const& timer, float const moveSpd, float const rotSpd)
@@ -185,12 +193,12 @@ void DX11UWA::Shield::StartTracking(void)
 }
 
 // When tracking, the 3D cube can be rotated around its Y axis by tracking pointer position relative to the output screen width.
-void Shield::TrackingUpdate(float positionX)
+void Shield::TrackingUpdate(float positionX, int modify)
 {
 	if (m_tracking)
 	{
 		float radians = XM_2PI * 2.0f * positionX / m_deviceResources->GetOutputSize().Width;
-		Rotate(radians);
+		Rotate(radians, modify);
 	}
 }
 
@@ -240,7 +248,8 @@ void Shield::Render(void)
 	context->PSSetShaderResources(0, 1, textViews);
 
 	// Draw the objects.
-	context->DrawIndexed(m_indexCount, 0, 0);
+	//context->DrawIndexed(m_indexCount, 0, 0);
+	context->DrawIndexedInstanced(m_indexCount, ModelCount, 0, 0, 0);
 }
 
 void Shield::CreateDeviceDependentResources(void)

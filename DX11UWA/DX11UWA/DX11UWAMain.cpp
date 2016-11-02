@@ -16,7 +16,7 @@ DX11UWAMain::DX11UWAMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 
 	// TODO: Replace this with your app's content initialization.
 	m_sceneRenderer = std::unique_ptr<Sample3DSceneRenderer>(new Sample3DSceneRenderer(m_deviceResources));
-	m_ShieldRenderer = std::unique_ptr<Shield>(new Shield(m_deviceResources));
+	m_ShieldRenderer = std::unique_ptr<Shield>(new Shield(m_deviceResources, 2));
 
 	m_fpsTextRenderer = std::unique_ptr<SampleFpsTextRenderer>(new SampleFpsTextRenderer(m_deviceResources));
 
@@ -51,7 +51,8 @@ void DX11UWAMain::Update(void)
 		// TODO: Replace this with your app's content update functions.
 		m_sceneRenderer->Update(m_timer);
 		m_sceneRenderer->SetInputDeviceData(main_kbuttons, main_currentpos);
-		m_ShieldRenderer->Update(m_timer);
+		m_ShieldRenderer->Update(m_timer, 1);
+		m_ShieldRenderer->Update(m_timer, 0);
 		m_ShieldRenderer->SetInputDeviceData(main_kbuttons, main_currentpos);
 		m_fpsTextRenderer->Update(m_timer);
 	});
