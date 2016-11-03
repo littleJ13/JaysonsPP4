@@ -16,7 +16,7 @@ DX11UWAMain::DX11UWAMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 
 	// TODO: Replace this with your app's content initialization.
 	m_sceneRenderer = std::unique_ptr<Sample3DSceneRenderer>(new Sample3DSceneRenderer(m_deviceResources));
-	m_ShieldRenderer = std::unique_ptr<Shield>(new Shield(m_deviceResources, 2));
+	m_ShieldRenderer = std::unique_ptr<Shield>(new Shield(m_deviceResources, 3));
 
 	m_fpsTextRenderer = std::unique_ptr<SampleFpsTextRenderer>(new SampleFpsTextRenderer(m_deviceResources));
 

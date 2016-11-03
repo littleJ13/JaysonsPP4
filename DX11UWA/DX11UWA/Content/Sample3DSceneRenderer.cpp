@@ -239,6 +239,10 @@ void Sample3DSceneRenderer::Render(void)
 	// Attach our pixel shader.
 	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 
+	//For Texture
+	ID3D11ShaderResourceView* textViews[] = { m_SRV.Get() };
+	context->PSSetShaderResources(0, 1, textViews);
+
 	// Draw the objects.
 	context->DrawIndexed(m_indexCount, 0, 0);
 }
@@ -247,7 +251,7 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 {
 	// Load shaders asynchronously.
 	auto loadVSTask = DX::ReadDataAsync(L"SampleVertexShader.cso");
-	auto loadPSTask = DX::ReadDataAsync(L"CubePixelShader.cso");
+	auto loadPSTask = DX::ReadDataAsync(L"SkyBoxPixelShader.cso");
 
 	// After the vertex shader file is loaded, create the shader and input layout.
 	auto createVSTask = loadVSTask.then([this](const std::vector<byte>& fileData)
@@ -328,6 +332,8 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 		indexBufferData.SysMemSlicePitch = 0;
 		CD3D11_BUFFER_DESC indexBufferDesc(sizeof(cubeIndices), D3D11_BIND_INDEX_BUFFER);
 		DX::ThrowIfFailed(m_deviceResources->GetD3DDevice()->CreateBuffer(&indexBufferDesc, &indexBufferData, &m_indexBuffer));
+
+		CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/SunsetSkybox.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
 
 	});
 

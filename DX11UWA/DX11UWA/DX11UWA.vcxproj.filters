@@ -122,6 +122,7 @@
     </Image>
     <Image Include="Assets\shield1.dds" />
     <Image Include="Assets\mapletree.dds" />
+    <Image Include="Assets\SunsetSkybox.dds" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
@@ -139,6 +140,9 @@
       <Filter>Content\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="CubePixelShader.hlsl">
+      <Filter>Content\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyBoxPixelShader.hlsl">
       <Filter>Content\Shaders</Filter>
     </FxCompile>
   </ItemGroup>

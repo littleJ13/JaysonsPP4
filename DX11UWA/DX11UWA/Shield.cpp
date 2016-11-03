@@ -79,16 +79,20 @@ void Shield::Update(DX::StepTimer const& timer, int modify)
 }
 
 //Rotate the 3D cube model a set amount of radians.
-void Shield::Rotate(float radians, int modify)
+void Shield::Rotate(float radians, int model)
 {
 	// Prepare to pass the updated model matrix to the shader
-	if (modify == 0)
+	if (model == 0)
 	{
-		XMStoreFloat4x4(&m_constantBufferData.model[modify], XMMatrixTranspose(XMMatrixRotationY(radians)));
+		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(20, 0, 10) * XMMatrixScaling(.2, .2, .2)));
 	}
-	else
+	else if (model == 1)
 	{
-		XMStoreFloat4x4(&m_constantBufferData.model[modify], XMMatrixTranspose(XMMatrixRotationZ(radians)));
+		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(-20, 0, 10) * XMMatrixScaling(.2, .2, .2)));
+	}
+	else if (model == 2)
+	{
+		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(-30, 0, 10) * XMMatrixScaling(.2, .2, .2)));
 	}
 }
 

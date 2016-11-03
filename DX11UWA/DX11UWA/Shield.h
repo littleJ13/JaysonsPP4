@@ -29,7 +29,7 @@ namespace DX11UWA
 
 
 	private:
-		void Rotate(float radians, int modify);
+		void Rotate(float radians, int model);
 		void UpdateCamera(DX::StepTimer const& timer, float const moveSpd, float const rotSpd);
 
 	private:
