@@ -167,8 +167,6 @@ void Sample3DSceneRenderer::UpdateCamera(DX::StepTimer const& timer, float const
 		}
 		m_prevMousePos = m_currMousePos;
 	}
-
-
 }
 
 void Sample3DSceneRenderer::SetKeyboardButtons(const char* list)

@@ -84,15 +84,15 @@ void Shield::Rotate(float radians, int model)
 	// Prepare to pass the updated model matrix to the shader
 	if (model == 0)
 	{
-		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(20, 0, 10) * XMMatrixScaling(.2, .2, .2)));
+		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(15, -5, 10) * XMMatrixScaling(.1, .1, .1)));
 	}
 	else if (model == 1)
 	{
-		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(-20, 0, 10) * XMMatrixScaling(.2, .2, .2)));
+		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(-15, -5, 10) * XMMatrixScaling(.1, .1, .1)));
 	}
 	else if (model == 2)
 	{
-		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(-30, 0, 10) * XMMatrixScaling(.2, .2, .2)));
+		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(-30, 0, 10) * XMMatrixScaling(.1, .1, .1)));
 	}
 }
 
@@ -252,7 +252,6 @@ void Shield::Render(void)
 	context->PSSetShaderResources(0, 1, textViews);
 
 	// Draw the objects.
-	//context->DrawIndexed(m_indexCount, 0, 0);
 	context->DrawIndexedInstanced(m_indexCount, ModelCount, 0, 0, 0);
 }
 

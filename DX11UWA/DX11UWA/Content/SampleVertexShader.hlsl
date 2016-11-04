@@ -11,6 +11,7 @@ struct VertexShaderInput
 {
 	float4 pos : POSITION;
 	float4 uv : UV;
+	float4 normal : NORMAL;
 };
 
 // Per-pixel color data passed through the pixel shader.
@@ -35,6 +36,6 @@ PixelShaderInput main(VertexShaderInput input, uint arr : SV_InstanceID)
 
 	// Pass the color through without modification.
 	output.uv = input.uv;
-
+	output.normal = input.normal;
 	return output;
 }
