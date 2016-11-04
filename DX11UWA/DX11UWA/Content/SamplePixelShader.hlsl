@@ -1,5 +1,4 @@
 // Per-pixel color data passed through the pixel shader.
-
 texture2D txt2D : register(t0);
 SamplerState SS : register(s0);
 

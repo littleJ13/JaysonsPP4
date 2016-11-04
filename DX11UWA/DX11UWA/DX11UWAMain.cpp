@@ -81,12 +81,12 @@ bool DX11UWAMain::Render(void)
 	// Clear the back buffer and depth stencil view.
 	context->ClearRenderTargetView(m_deviceResources->GetBackBufferRenderTargetView(), DirectX::Colors::CornflowerBlue);
 	context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	// Render the scene objects.
-	// TODO: Replace this with your app's content rendering functions.
-	m_sceneRenderer->Render();
+	m_sceneRenderer->Render();	
 	m_ShieldRenderer->Render();
 	m_fpsTextRenderer->Render();
+	context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	// Render the scene objects.
+	// TODO: Replace this with your app's content rendering functions.
 
 	return true;
 }

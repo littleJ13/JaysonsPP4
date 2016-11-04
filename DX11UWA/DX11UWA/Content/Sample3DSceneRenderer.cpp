@@ -80,13 +80,16 @@ void Sample3DSceneRenderer::Update(DX::StepTimer const& timer)
 
 	// Update or move camera here
 	UpdateCamera(timer, 7.0f, 0.75f);
+	m_camera._41 = x;
+	m_camera._42 = y;
+	m_camera._43 = z;
+	XMStoreFloat4x4(&m_constantBufferData.model[0], XMMatrixTranspose(XMMatrixTranslation(m_camera._41, m_camera._42, m_camera._43) * XMMatrixScaling(100, 100, 100)));
 }
 
 // Rotate the 3D cube model a set amount of radians.
 void Sample3DSceneRenderer::Rotate(float radians)
 {
 	// Prepare to pass the updated model matrix to the shader
-	XMStoreFloat4x4(&m_constantBufferData.model[0], XMMatrixTranspose(XMMatrixRotationY(radians)));
 }
 
 void Sample3DSceneRenderer::UpdateCamera(DX::StepTimer const& timer, float const moveSpd, float const rotSpd)
@@ -250,7 +253,7 @@ void Sample3DSceneRenderer::Render(void)
 void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 {
 	// Load shaders asynchronously.
-	auto loadVSTask = DX::ReadDataAsync(L"SampleVertexShader.cso");
+	auto loadVSTask = DX::ReadDataAsync(L"SkyBoxVertexShader.cso");
 	auto loadPSTask = DX::ReadDataAsync(L"SkyBoxPixelShader.cso");
 
 	// After the vertex shader file is loaded, create the shader and input layout.
@@ -285,10 +288,10 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f)},
 			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f)},
 			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f, 1.0f, 1.0f)},
-			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f)},
-			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(1.0f, 0.0f, 1.0f)},
-			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f)},
-			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f)},
+			{XMFLOAT3(0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f)},
+			{XMFLOAT3(0.5f, -0.5f,  0.5f), XMFLOAT3(1.0f, 0.0f, 1.0f)},
+			{XMFLOAT3(0.5f,  0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f)},
+			{XMFLOAT3(0.5f,  0.5f,  0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f)},
 		};
 
 		D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
@@ -305,23 +308,23 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 		// first triangle of this mesh.
 		static const unsigned short cubeIndices[] =
 		{
-			0,1,2, // -x
-			1,3,2,
-		
-			4,6,5, // +x
-			5,6,7,
-		
-			0,5,1, // -y
-			0,4,5,
-		
-			2,7,6, // +y
-			2,3,7,
-		
-			0,6,4, // -z
-			0,2,6,
-		
-			1,7,3, // +z
-			1,5,7,
+			2,1,0, // -x
+			2,3,1,
+
+			5,6,4, // +x
+			7,6,5,
+
+			1,5,0, // -y
+			5,4,0,
+
+			6,7,2, // +y
+			7,3,2,
+
+			4,6,0, // -z
+			6,2,0,
+
+			3,7,1, // +z
+			7,5,1,
 		};
 
 		m_indexCount = ARRAYSIZE(cubeIndices);

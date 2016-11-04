@@ -31,6 +31,7 @@ namespace DX11UWA
 	private:
 		void Rotate(float radians);
 		void UpdateCamera(DX::StepTimer const& timer, float const moveSpd, float const rotSpd);
+		float x, y, z;
 
 	private:
 		// Cached pointer to device resources.
