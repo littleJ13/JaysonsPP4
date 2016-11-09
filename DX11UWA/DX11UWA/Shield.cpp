@@ -84,11 +84,11 @@ void Shield::Rotate(float radians, int model)
 	// Prepare to pass the updated model matrix to the shader
 	if (model == 0)
 	{
-		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(15, -5, 10) * XMMatrixScaling(.1, .1, .1)));
+		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(15, -5, 13) * XMMatrixScaling(.1, .1, .1)));
 	}
 	else if (model == 1)
 	{
-		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(-15, -5, 10) * XMMatrixScaling(.1, .1, .1)));
+		XMStoreFloat4x4(&m_constantBufferData.model[model], XMMatrixTranspose(XMMatrixTranslation(-15, -5, 13) * XMMatrixScaling(.1, .1, .1)));
 	}
 	else if (model == 2)
 	{
