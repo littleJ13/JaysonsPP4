@@ -48,6 +48,10 @@ namespace DX11UWA
 		Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_texture2D;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_SRV;
 
+		//Make a second txt2d and shaderesourceview
+		Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_texture2D2;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_SRV2;
+
 		// System resources for cube geometry.
 		ModelViewProjectionConstantBuffer	m_constantBufferData;
 		uint32	m_indexCount;
@@ -66,6 +70,12 @@ namespace DX11UWA
 		DirectX::XMFLOAT4X4 m_camera;
 		DirectX::XMFLOAT4X4 m_camera2;
 
+		CD3D11_VIEWPORT SecondView = CD3D11_VIEWPORT(
+			0.0f,
+			m_deviceResources->GetScreenViewport().Height,
+			m_deviceResources->GetScreenViewport().Width,
+			m_deviceResources->GetScreenViewport().Height
+			);
 	};
 }
 

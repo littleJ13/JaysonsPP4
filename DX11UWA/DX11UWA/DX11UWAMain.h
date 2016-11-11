@@ -32,6 +32,8 @@ namespace DX11UWA
 
 		// TODO: Replace with your own content renderers.
 		std::unique_ptr<Sample3DSceneRenderer> m_sceneRenderer;
+		std::unique_ptr<Shield> m_MyCube;
+		std::unique_ptr<Shield> m_TextureCubeMapping;
 		std::unique_ptr<Shield> m_ShieldRenderer;
 		std::unique_ptr<SampleFpsTextRenderer> m_fpsTextRenderer;
 

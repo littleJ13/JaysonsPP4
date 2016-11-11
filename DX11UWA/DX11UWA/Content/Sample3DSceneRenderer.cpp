@@ -81,7 +81,6 @@ void Sample3DSceneRenderer::Update(DX::StepTimer const& timer)
 		float radiansPerSecond = XMConvertToRadians(m_degreesPerSecond);
 		double totalRotation = timer.GetTotalSeconds() * radiansPerSecond;
 		float radians = static_cast<float>(fmod(totalRotation, XM_2PI));
-
 		Rotate(radians);
 	}
 
@@ -248,20 +247,13 @@ void Sample3DSceneRenderer::Render(void)
 	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 
 	//For Texture
-	ID3D11ShaderResourceView* textViews[] = { m_SRV.Get() };
-	context->PSSetShaderResources(0, 1, textViews);
+	ID3D11ShaderResourceView* textViews[] = { m_SRV.Get(), m_SRV2.Get() };
+	context->PSSetShaderResources(0, 2, textViews);
 
 	// Draw the objects.
+	//context->DrawIndexedInstanced(m_indexCount, ModelCount, 0, 0, 0);
 	context->DrawIndexed(m_indexCount, 0, 0);
-
-
 	//Creating my second view
-	CD3D11_VIEWPORT SecondView = CD3D11_VIEWPORT(
-		0.0f,
-		m_deviceResources->GetScreenViewport().Height,
-		m_deviceResources->GetScreenViewport().Width,
-		m_deviceResources->GetScreenViewport().Height
-		);
 	context->RSSetViewports(1, &SecondView);
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_camera2))));
 	context->UpdateSubresource1(m_constantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
@@ -270,7 +262,7 @@ void Sample3DSceneRenderer::Render(void)
 
 void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 {
-	// Load shaders asynchronously.
+	//Load shaders asynchronously.
 	auto loadVSTask = DX::ReadDataAsync(L"SkyBoxVertexShader.cso");
 	auto loadPSTask = DX::ReadDataAsync(L"SkyBoxPixelShader.cso");
 
@@ -354,8 +346,8 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 		CD3D11_BUFFER_DESC indexBufferDesc(sizeof(cubeIndices), D3D11_BIND_INDEX_BUFFER);
 		DX::ThrowIfFailed(m_deviceResources->GetD3DDevice()->CreateBuffer(&indexBufferDesc, &indexBufferData, &m_indexBuffer));
 
-		CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/SunsetSkybox.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
 
+		CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/SunsetSkybox.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
 	});
 
 	// Once the cube is loaded, the object is ready to be rendered.

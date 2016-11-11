@@ -1,6 +1,7 @@
 // Per-pixel color data passed through the pixel shader.
 texture2D txt2D : register(t0);
-SamplerState SS : register(s0);
+texture2D txt2D2 : register(t0);
+SamplerState SS[2] : register(s0);
 
 struct PixelShaderInput
 {
@@ -12,7 +13,7 @@ struct PixelShaderInput
 // A pass-through function for the (interpolated) color data.
 float4 main(float4 pos : SV_POSITION, float4 uv : UV, float4 normal : NORMAL) : SV_TARGET
 {
-	float4 Mask = txt2D.Sample(SS, uv);
+	float4 Mask = txt2D.Sample(SS[0], uv);
 	if (Mask.a < 0.5)
 	{
 		discard;
@@ -38,7 +39,7 @@ float4 main(float4 pos : SV_POSITION, float4 uv : UV, float4 normal : NORMAL) : 
 
 
 	float4 LightRatio = saturate(dot(-LightDirection, SurfaceNormal));
-	float4 Result = LightRatio * LightColor * txt2D.Sample(SS, uv);
+	float4 Result = LightRatio * LightColor * txt2D.Sample(SS[0], uv);
 
 	//Added Point Light
 	LightColor.r = 1;
@@ -52,7 +53,7 @@ float4 main(float4 pos : SV_POSITION, float4 uv : UV, float4 normal : NORMAL) : 
 
 	float4 LightDir = normalize(LightPos - SurfacePos);
 	LightRatio = saturate(dot(LightDirection, SurfaceNormal));
-	float4 Result2 = LightRatio * LightColor * txt2D.Sample(SS, uv);
+	float4 Result2 = LightRatio * LightColor * txt2D.Sample(SS[0], uv);
 
 	//Added Spot Light
 	LightColor.r = 1;
@@ -72,11 +73,12 @@ float4 main(float4 pos : SV_POSITION, float4 uv : UV, float4 normal : NORMAL) : 
 	LightDirection.y = 0;
 	LightDirection.z = 0;
 
-	LightDir = normalize(LightPos - SurfacePos);
-	float4 SurfaceRatio = saturate(dot(-LightDir, ConeDir));
-	float4 SpotFactor = (SurfaceRatio > ConeRatio) ? 1 : 0;
-	float4 Result3 = SpotFactor * LightRatio * LightColor * txt2D.Sample(SS, uv);
+	//LightDir = normalize(LightPos - SurfacePos);
+	//float4 SurfaceRatio = saturate(dot(-LightDir, ConeDir));
+	//float4 SpotFactor = (SurfaceRatio > ConeRatio) ? 1 : 0;
+	//float4 Result3 = SpotFactor * LightRatio * LightColor * txt2D.Sample(SS[0], uv);
 
-	return Result + Result2 + Result3;
+	return Result + Result2;
+	//return Result + Result2 + Result3;
 }
 

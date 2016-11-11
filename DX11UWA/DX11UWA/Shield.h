@@ -11,7 +11,7 @@ namespace DX11UWA
 	class Shield
 	{
 	public:
-		Shield(const std::shared_ptr<DX::DeviceResources>& deviceResources, int number = 1);
+		Shield(const std::shared_ptr<DX::DeviceResources>& deviceResources, int number = 1, int type = 1);
 		void CreateDeviceDependentResources(void);
 		void CreateWindowSizeDependentResources(void);
 		void ReleaseDeviceDependentResources(void);
@@ -34,6 +34,7 @@ namespace DX11UWA
 
 	private:
 		int ModelCount;
+		int TypeIs;
 		// Cached pointer to device resources.
 		std::shared_ptr<DX::DeviceResources> m_deviceResources;
 
@@ -65,6 +66,18 @@ namespace DX11UWA
 		// Matrix data member for the camera
 		DirectX::XMFLOAT4X4 m_camera;
 		DirectX::XMFLOAT4X4 m_camera2;
+
+		wchar_t * Pixel;
+		wchar_t * Vertex;
+
+		Microsoft::WRL::ComPtr<ID3D11BlendState> m_blend;
+
+		CD3D11_VIEWPORT SecondView = CD3D11_VIEWPORT(
+			0.0f,
+			m_deviceResources->GetScreenViewport().Height,
+			m_deviceResources->GetScreenViewport().Width,
+			m_deviceResources->GetScreenViewport().Height
+			);
 	};
 }
 

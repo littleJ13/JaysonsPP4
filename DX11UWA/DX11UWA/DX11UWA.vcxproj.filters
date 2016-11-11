@@ -123,6 +123,8 @@
     <Image Include="Assets\shield1.dds" />
     <Image Include="Assets\mapletree.dds" />
     <Image Include="Assets\SunsetSkybox.dds" />
+    <Image Include="Assets\energy_seamless.dds" />
+    <Image Include="Assets\cube.dds" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
@@ -131,6 +133,7 @@
     <None Include="DX11UWA_TemporaryKey.pfx" />
     <None Include="Assets\mapleShape.mesh" />
     <None Include="Assets\Horned_ShieldShape.mesh" />
+    <None Include="Assets\pCube1Shape.mesh" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Content\SampleVertexShader.hlsl">

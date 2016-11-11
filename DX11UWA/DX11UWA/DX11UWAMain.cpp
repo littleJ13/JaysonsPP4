@@ -16,8 +16,9 @@ DX11UWAMain::DX11UWAMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 
 	// TODO: Replace this with your app's content initialization.
 	m_sceneRenderer = std::unique_ptr<Sample3DSceneRenderer>(new Sample3DSceneRenderer(m_deviceResources));
-	m_ShieldRenderer = std::unique_ptr<Shield>(new Shield(m_deviceResources, 3));
-
+	m_ShieldRenderer = std::unique_ptr<Shield>(new Shield(m_deviceResources, 3, 1));
+	m_MyCube = std::unique_ptr<Shield>(new Shield(m_deviceResources, 3, 2));
+	m_TextureCubeMapping = std::unique_ptr<Shield>(new Shield(m_deviceResources, 1, 3));
 	m_fpsTextRenderer = std::unique_ptr<SampleFpsTextRenderer>(new SampleFpsTextRenderer(m_deviceResources));
 
 	// TODO: Change the timer settings if you want something other than the default variable timestep mode.
@@ -39,6 +40,8 @@ void DX11UWAMain::CreateWindowSizeDependentResources(void)
 {
 	// TODO: Replace this with the size-dependent initialization of your app's content.
 	m_sceneRenderer->CreateWindowSizeDependentResources();
+	m_MyCube->CreateWindowSizeDependentResources();
+	m_TextureCubeMapping->CreateWindowSizeDependentResources();
 	m_ShieldRenderer->CreateWindowSizeDependentResources();
 }
 
@@ -51,9 +54,20 @@ void DX11UWAMain::Update(void)
 		// TODO: Replace this with your app's content update functions.
 		m_sceneRenderer->Update(m_timer);
 		m_sceneRenderer->SetInputDeviceData(main_kbuttons, main_currentpos);
-		m_ShieldRenderer->Update(m_timer, 1);
+
+		m_MyCube->Update(m_timer, 0);
+		m_MyCube->Update(m_timer, 1);
+		m_MyCube->Update(m_timer, 2);
+		m_MyCube->SetInputDeviceData(main_kbuttons, main_currentpos);
+
+		m_TextureCubeMapping->Update(m_timer, 0);
+		m_TextureCubeMapping->SetInputDeviceData(main_kbuttons, main_currentpos);
+
 		m_ShieldRenderer->Update(m_timer, 0);
+		m_ShieldRenderer->Update(m_timer, 1);
+		m_ShieldRenderer->Update(m_timer, 2);
 		m_ShieldRenderer->SetInputDeviceData(main_kbuttons, main_currentpos);
+
 		m_fpsTextRenderer->Update(m_timer);
 	});
 }
@@ -86,10 +100,19 @@ bool DX11UWAMain::Render(void)
 	// TODO: Replace this with your app's content rendering functions.
 	m_sceneRenderer->Render();	
 	context->RSSetViewports(1, &viewport);
+
+	m_MyCube->Render();
+	context->RSSetViewports(1, &viewport);
+
+	m_TextureCubeMapping->Render();
+	context->RSSetViewports(1, &viewport);
+
 	m_ShieldRenderer->Render();
 	context->RSSetViewports(1, &viewport);
+
 	m_fpsTextRenderer->Render();
 	context->RSSetViewports(1, &viewport);
+
 	return true;
 }
 
@@ -97,6 +120,8 @@ bool DX11UWAMain::Render(void)
 void DX11UWAMain::OnDeviceLost(void)
 {
 	m_sceneRenderer->ReleaseDeviceDependentResources();
+	m_MyCube->ReleaseDeviceDependentResources();
+	m_TextureCubeMapping->ReleaseDeviceDependentResources();
 	m_ShieldRenderer->ReleaseDeviceDependentResources();
 	m_fpsTextRenderer->ReleaseDeviceDependentResources();
 }
@@ -105,6 +130,8 @@ void DX11UWAMain::OnDeviceLost(void)
 void DX11UWAMain::OnDeviceRestored(void)
 {
 	m_sceneRenderer->CreateDeviceDependentResources();
+	m_MyCube->CreateDeviceDependentResources();
+	m_TextureCubeMapping->CreateDeviceDependentResources();
 	m_ShieldRenderer->CreateDeviceDependentResources();
 	m_fpsTextRenderer->CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
