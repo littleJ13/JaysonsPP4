@@ -57,6 +57,12 @@ void Shield::CreateWindowSizeDependentResources(void)
 
 	XMStoreFloat4x4(&m_camera, XMMatrixInverse(nullptr, XMMatrixLookAtLH(eye, at, up)));
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtLH(eye, at, up)));
+
+	static const XMVECTORF32 eye2 = { 0.0f, 25.0f, -1.5f, 0.0f };
+	static const XMVECTORF32 at2 = { 0.0f, -0.1f, 0.0f, 0.0f };
+	static const XMVECTORF32 up2 = { 0.0f, 10.0f, 0.0f, 0.0f };
+	XMStoreFloat4x4(&m_camera2, XMMatrixInverse(nullptr, XMMatrixLookAtLH(eye2, at2, up2)));
+	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtLH(eye2, at2, up2)));
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
@@ -252,6 +258,18 @@ void Shield::Render(void)
 	context->PSSetShaderResources(0, 1, textViews);
 
 	// Draw the objects.
+	context->DrawIndexedInstanced(m_indexCount, ModelCount, 0, 0, 0);
+
+	//Creating my second view
+	CD3D11_VIEWPORT SecondView = CD3D11_VIEWPORT(
+		0.0f,
+		m_deviceResources->GetScreenViewport().Height,
+		m_deviceResources->GetScreenViewport().Width,
+		m_deviceResources->GetScreenViewport().Height
+		);
+	context->RSSetViewports(1, &SecondView);
+	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_camera2))));
+	context->UpdateSubresource1(m_constantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
 	context->DrawIndexedInstanced(m_indexCount, ModelCount, 0, 0, 0);
 }
 

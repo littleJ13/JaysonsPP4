@@ -22,7 +22,7 @@ Sample3DSceneRenderer::Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceRes
 	m_currMousePos = nullptr;
 	m_prevMousePos = nullptr;
 	memset(&m_camera, 0, sizeof(XMFLOAT4X4));
-
+	memset(&m_camera2, 0, sizeof(XMFLOAT4X4));
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
 }
@@ -31,7 +31,7 @@ Sample3DSceneRenderer::Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceRes
 void Sample3DSceneRenderer::CreateWindowSizeDependentResources(void)
 {
 	Size outputSize = m_deviceResources->GetOutputSize();
-	float aspectRatio = outputSize.Width / outputSize.Height;
+	float aspectRatio = outputSize.Width / outputSize.Height * .5f;
 	float fovAngleY = 70.0f * XM_PI / 180.0f;
 
 	// This is a simple example of change that can be made when the app is in
@@ -63,6 +63,13 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources(void)
 
 	XMStoreFloat4x4(&m_camera, XMMatrixInverse(nullptr, XMMatrixLookAtLH(eye, at, up)));
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtLH(eye, at, up)));
+
+
+	static const XMVECTORF32 eye2 = { 0.0f, 25.0f, -1.5f, 0.0f };
+	static const XMVECTORF32 at2 = { 0.0f, -0.1f, 0.0f, 0.0f };
+	static const XMVECTORF32 up2 = { 0.0f, 10.0f, 0.0f, 0.0f };
+	XMStoreFloat4x4(&m_camera2, XMMatrixInverse(nullptr, XMMatrixLookAtLH(eye2, at2, up2)));
+	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtLH(eye2, at2, up2)));
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
@@ -83,7 +90,7 @@ void Sample3DSceneRenderer::Update(DX::StepTimer const& timer)
 	m_camera._41 = x;
 	m_camera._42 = y;
 	m_camera._43 = z;
-	XMStoreFloat4x4(&m_constantBufferData.model[0], XMMatrixTranspose(XMMatrixTranslation(m_camera._41, m_camera._42, m_camera._43) * XMMatrixScaling(100, 100, 100)));
+	XMStoreFloat4x4(&m_constantBufferData.model[0], XMMatrixTranspose(XMMatrixScaling(100, 100, 100) * XMMatrixTranslation(m_camera._41, m_camera._42, m_camera._43)));
 }
 
 // Rotate the 3D cube model a set amount of radians.
@@ -245,6 +252,19 @@ void Sample3DSceneRenderer::Render(void)
 	context->PSSetShaderResources(0, 1, textViews);
 
 	// Draw the objects.
+	context->DrawIndexed(m_indexCount, 0, 0);
+
+
+	//Creating my second view
+	CD3D11_VIEWPORT SecondView = CD3D11_VIEWPORT(
+		0.0f,
+		m_deviceResources->GetScreenViewport().Height,
+		m_deviceResources->GetScreenViewport().Width,
+		m_deviceResources->GetScreenViewport().Height
+		);
+	context->RSSetViewports(1, &SecondView);
+	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_camera2))));
+	context->UpdateSubresource1(m_constantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
 	context->DrawIndexed(m_indexCount, 0, 0);
 }
 

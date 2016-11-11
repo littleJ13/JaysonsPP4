@@ -85,9 +85,11 @@ bool DX11UWAMain::Render(void)
 	// Render the scene objects.
 	// TODO: Replace this with your app's content rendering functions.
 	m_sceneRenderer->Render();	
+	context->RSSetViewports(1, &viewport);
 	m_ShieldRenderer->Render();
+	context->RSSetViewports(1, &viewport);
 	m_fpsTextRenderer->Render();
-
+	context->RSSetViewports(1, &viewport);
 	return true;
 }
 
