@@ -20,6 +20,7 @@ namespace DX11UWA
 		void StartTracking(void);
 		void TrackingUpdate(float positionX, int modify);
 		void StopTracking(void);
+		void ChangeRender(DirectX::XMFLOAT4X4 m_camera, int input);
 		inline bool IsTracking(void) { return m_tracking; }
 
 		// Helper functions for keyboard and mouse input

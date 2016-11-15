@@ -246,6 +246,25 @@ void Shield::StopTracking(void)
 	m_tracking = false;
 }
 
+void Shield::ChangeRender(XMFLOAT4X4 m_camera, int input)
+{
+	for (size_t i = 0; i < input - 1; i++)
+	{
+		XMFLOAT3 Cube1 = { m_constantBufferData.model[i]._14, m_constantBufferData.model[i]._24 , m_constantBufferData.model[i]._34 };
+		XMFLOAT3 Cube2 = { m_constantBufferData.model[i + 1]._14, m_constantBufferData.model[i + 1]._24 , m_constantBufferData.model[i + 1]._34 };
+		float Dis1 = pow(m_camera._41 - Cube1.x, 2) + pow(m_camera._42 - Cube1.y, 2) + pow(m_camera._43 - Cube1.z, 2);
+		float Dis2 = pow(m_camera._41 - Cube2.x, 2) + pow(m_camera._42 - Cube2.y, 2) + pow(m_camera._43 - Cube2.z, 2);
+
+		if (Dis1 < Dis2)
+		{
+			XMFLOAT4X4 mTemp = m_constantBufferData.model[i];
+			m_constantBufferData.model[i] = m_constantBufferData.model[i + 1];
+			m_constantBufferData.model[i + 1] = mTemp;
+			i = -1;
+		}
+	}
+}
+
 // Renders one frame using the vertex and pixel shaders.
 void Shield::Render(void)
 {
@@ -254,6 +273,8 @@ void Shield::Render(void)
 	{
 		return;
 	}
+	
+	ChangeRender(m_camera, 3);
 
 	auto context = m_deviceResources->GetD3DDeviceContext();
 
