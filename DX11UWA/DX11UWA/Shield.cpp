@@ -459,8 +459,7 @@ void Shield::CreateDeviceDependentResources(void)
 		}
 	});
 
-		// Once the cube is loaded, the object is ready to be rendered.
-		createCubeTask.then([this]()
+	auto createTask = (task && task2 && createCubeTask).then([this]()
 	{
 		m_loadingComplete = true;
 	});
