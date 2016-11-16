@@ -263,6 +263,18 @@ void Sample3DSceneRenderer::Render(void)
 
 void Sample3DSceneRenderer::CreateDeviceDependentResources(void)
 {
+
+	Concurrency::task<void> task([this](void)
+	{
+	
+		int test = 0;
+	
+	});
+
+
+
+	//task.get();
+
 	//Load shaders asynchronously.
 	auto loadVSTask = DX::ReadDataAsync(L"SkyBoxVertexShader.cso");
 	auto loadPSTask = DX::ReadDataAsync(L"SkyBoxPixelShader.cso");

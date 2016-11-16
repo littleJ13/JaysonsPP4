@@ -50,6 +50,9 @@ namespace DX11UWA
 		Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_texture2D;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_SRV;
 
+		Microsoft::WRL::ComPtr<ID3D11Texture2D>          m_texture2D2;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_SRV2;
+
 		// System resources for cube geometry.
 		ModelViewProjectionConstantBuffer	m_constantBufferData;
 		uint32	m_indexCount;

@@ -69,13 +69,6 @@ namespace DX11UWA
 		// Matrix data member for the camera
 		DirectX::XMFLOAT4X4 m_camera;
 		DirectX::XMFLOAT4X4 m_camera2;
-
-		CD3D11_VIEWPORT SecondView = CD3D11_VIEWPORT(
-			0.0f,
-			m_deviceResources->GetScreenViewport().Height,
-			m_deviceResources->GetScreenViewport().Width,
-			m_deviceResources->GetScreenViewport().Height
-			);
 	};
 }
 

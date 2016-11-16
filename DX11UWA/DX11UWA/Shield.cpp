@@ -33,7 +33,7 @@ Shield::Shield(const std::shared_ptr<DX::DeviceResources>& deviceResources, int 
 void Shield::CreateWindowSizeDependentResources(void)
 {
 	Size outputSize = m_deviceResources->GetOutputSize();
-	float aspectRatio = outputSize.Width / outputSize.Height;
+	float aspectRatio = outputSize.Width / (outputSize.Height * .5);
 	float fovAngleY = 70.0f * XM_PI / 180.0f;
 
 	// This is a simple example of change that can be made when the app is in
@@ -99,11 +99,6 @@ void Shield::Rotate(float radians, int model)
 		{
 			XMStoreFloat4x4(&m_constantBufferData.model[1], XMMatrixTranspose(XMMatrixTranslation(-15, -5, 20) * XMMatrixScaling(.1, .1, .1)));
 		}
-		else if (model == 2)
-		{
-			XMStoreFloat4x4(&m_constantBufferData.model[2], XMMatrixTranspose(XMMatrixTranslation(-20, 0, 20) * XMMatrixScaling(.1, .1, .1)));
-		}
-
 	}
 
 	//To adjust the cubes
@@ -123,9 +118,18 @@ void Shield::Rotate(float radians, int model)
 		{
 			XMStoreFloat4x4(&m_constantBufferData.model[2], XMMatrixTranspose(XMMatrixTranslation(0, -1, 9)));
 		}
+		else if (model == 3)
+		{
+			XMStoreFloat4x4(&m_constantBufferData.model[3], XMMatrixTranspose(XMMatrixTranslation(20, 5, 3)));
+		}
 	}
 
 	if (TypeIs == 3)
+	{
+		XMStoreFloat4x4(&m_constantBufferData.model[0], XMMatrixTranspose(XMMatrixTranslation(-3, -1, 3)));
+	}
+
+	if (TypeIs == 4)
 	{
 		XMStoreFloat4x4(&m_constantBufferData.model[0], XMMatrixTranspose(XMMatrixTranslation(3, -1, 3)));
 	}
@@ -273,7 +277,7 @@ void Shield::Render(void)
 	{
 		return;
 	}
-	
+
 	ChangeRender(m_camera, 3);
 
 	auto context = m_deviceResources->GetD3DDeviceContext();
@@ -284,7 +288,6 @@ void Shield::Render(void)
 	context->UpdateSubresource1(m_constantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
 
 	// Each vertex is one instance of the VertexPositionColor struct.
-	//UINT stride = sizeof(VertexPositionColor);
 	UINT stride = sizeof(VertexPositionUVNormal);
 	UINT offset = 0;
 	context->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
@@ -304,8 +307,8 @@ void Shield::Render(void)
 	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 
 	//For Texture
-	ID3D11ShaderResourceView* textViews[] = { m_SRV.Get() };
-	context->PSSetShaderResources(0, 1, textViews);
+	ID3D11ShaderResourceView* textViews[] = { m_SRV.Get(), m_SRV2.Get() };
+	context->PSSetShaderResources(0, 2, textViews);
 
 	// Draw the objects.
 	context->OMSetBlendState(m_blend.Get(), 0, 0xFFFFFFFF);
@@ -328,12 +331,21 @@ void Shield::CreateDeviceDependentResources(void)
 		Vertex = L"SampleVertexShader.cso";
 		Pixel = L"SamplePixelShader.cso";
 	}
-	if (TypeIs == 2 || TypeIs == 3)
+	if (TypeIs == 2)
 	{
 		Vertex = L"SampleVertexShader.cso";
 		Pixel = L"CubePixelShader.cso";
 	}
-
+	if (TypeIs == 3)
+	{
+		Vertex = L"SampleVertexShader.cso";
+		Pixel = L"2Texture.cso";
+	}
+	if (TypeIs == 4)
+	{
+		Vertex = L"SampleVertexShader.cso";
+		Pixel = L"CubePixelShader.cso";
+	}
 
 	auto loadVSTask = DX::ReadDataAsync(Vertex);
 	auto loadPSTask = DX::ReadDataAsync(Pixel);
@@ -364,7 +376,6 @@ void Shield::CreateDeviceDependentResources(void)
 	// Once both shaders are loaded, create the mesh.
 	auto createCubeTask = (createPSTask && createVSTask).then([this]()
 	{
-		// Load mesh vertices. Each vertex has a position and a color.
 		if (TypeIs == 1)
 		{
 			Mesh m;
@@ -385,15 +396,11 @@ void Shield::CreateDeviceDependentResources(void)
 			indexBufferData.SysMemSlicePitch = 0;
 			CD3D11_BUFFER_DESC indexBufferDesc(m.VertexIndices.size() * sizeof(unsigned short), D3D11_BIND_INDEX_BUFFER);
 			DX::ThrowIfFailed(m_deviceResources->GetD3DDevice()->CreateBuffer(&indexBufferDesc, &indexBufferData, &m_indexBuffer));
-
-			//For Texture 
-			CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/mapletree.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
 		}
 
 
-		if (TypeIs == 2 || TypeIs == 3)
+		if (TypeIs == 2 || TypeIs == 3 || TypeIs == 4)
 		{
-			// Load mesh vertices. Each vertex has a position and a color.
 			Mesh n;
 			n.LoadThatMesh("Assets/pCube1Shape.mesh");
 
@@ -427,21 +434,33 @@ void Shield::CreateDeviceDependentResources(void)
 				blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 				blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 				m_deviceResources->GetD3DDevice()->CreateBlendState(&blendDesc, &m_blend);
-
-				//For Texture 
-				CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/cube.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
-			}
-
-			if (TypeIs == 3)
-			{
-				CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/energy_seamless.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
-				CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/platform_seamless.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
 			}
 		}
 	});
 
-	// Once the cube is loaded, the object is ready to be rendered.
-	createCubeTask.then([this]()
+	Concurrency::task<void> task([this](void)
+	{
+		if (TypeIs == 1)
+		{
+			CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/mapletree.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
+		}
+	});
+
+	Concurrency::task<void> task2([this](void)
+	{
+		if (TypeIs == 2 || TypeIs == 3 || TypeIs == 4)
+		{
+			CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/cube.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
+		}
+		if (TypeIs == 3)
+		{
+			CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/energy_seamless.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
+			CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/platform_seamless.dds", (ID3D11Resource **)m_texture2D2.Get(), m_SRV2.GetAddressOf());
+		}
+	});
+
+		// Once the cube is loaded, the object is ready to be rendered.
+		createCubeTask.then([this]()
 	{
 		m_loadingComplete = true;
 	});
