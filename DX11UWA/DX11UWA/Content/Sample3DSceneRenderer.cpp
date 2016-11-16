@@ -89,7 +89,7 @@ void Sample3DSceneRenderer::Update(DX::StepTimer const& timer)
 	m_camera._41 = x;
 	m_camera._42 = y;
 	m_camera._43 = z;
-	XMStoreFloat4x4(&m_constantBufferData.model[0], XMMatrixTranspose(XMMatrixScaling(100, 100, 100) * XMMatrixTranslation(m_camera._41, m_camera._42, m_camera._43)));
+	XMStoreFloat4x4(&m_constantBufferData.model[0], XMMatrixTranspose(XMMatrixTranslation(m_camera._41, m_camera._42, m_camera._43) * XMMatrixScaling(100, 100, 100)));
 }
 
 // Rotate the 3D cube model a set amount of radians.
