@@ -251,10 +251,11 @@ void Sample3DSceneRenderer::Render(void)
 	context->PSSetShaderResources(0, 2, textViews);
 
 	// Draw the objects.
-	//context->DrawIndexedInstanced(m_indexCount, ModelCount, 0, 0, 0);
 	context->DrawIndexed(m_indexCount, 0, 0);
+
 	//Creating my second view
-	context->RSSetViewports(1, &SecondView);
+	auto viewport2 = m_deviceResources->GetScreenViewport2();
+	context->RSSetViewports(1, &viewport2);
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_camera2))));
 	context->UpdateSubresource1(m_constantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
 	context->DrawIndexed(m_indexCount, 0, 0);

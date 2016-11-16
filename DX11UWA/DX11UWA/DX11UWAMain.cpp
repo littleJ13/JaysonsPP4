@@ -86,6 +86,7 @@ bool DX11UWAMain::Render(void)
 
 	// Reset the viewport to target the whole screen.
 	auto viewport = m_deviceResources->GetScreenViewport();
+	//auto viewport2 = m_deviceResources->GetScreenViewport2();
 	context->RSSetViewports(1, &viewport);
 
 	// Reset render targets to the screen.
@@ -99,20 +100,29 @@ bool DX11UWAMain::Render(void)
 	// Render the scene objects.
 	// TODO: Replace this with your app's content rendering functions.
 	m_sceneRenderer->Render();	
+	//context->RSSetViewports(1, &viewport2);
+	//m_sceneRenderer->Render();
 	context->RSSetViewports(1, &viewport);
 
 	m_MyCube->Render();
+	//context->RSSetViewports(1, &viewport2);
+	//m_MyCube->Render();
 	context->RSSetViewports(1, &viewport);
 
 	m_TextureCubeMapping->Render();
+	//context->RSSetViewports(1, &viewport2);
+	//m_TextureCubeMapping->Render();
 	context->RSSetViewports(1, &viewport);
 
 	m_ShieldRenderer->Render();
+	//context->RSSetViewports(1, &viewport2);
+	//m_ShieldRenderer->Render();
 	context->RSSetViewports(1, &viewport);
 
 	m_fpsTextRenderer->Render();
+	//context->RSSetViewports(1, &viewport2);
+	//m_fpsTextRenderer->Render();
 	context->RSSetViewports(1, &viewport);
-
 	return true;
 }
 

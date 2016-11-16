@@ -125,6 +125,7 @@
     <Image Include="Assets\SunsetSkybox.dds" />
     <Image Include="Assets\energy_seamless.dds" />
     <Image Include="Assets\cube.dds" />
+    <Image Include="Assets\platform_seamless.dds" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />

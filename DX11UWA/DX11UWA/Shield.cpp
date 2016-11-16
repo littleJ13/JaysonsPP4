@@ -312,7 +312,8 @@ void Shield::Render(void)
 	context->DrawIndexedInstanced(m_indexCount, ModelCount, 0, 0, 0);
 
 	//Creating my second view
-	context->RSSetViewports(1, &SecondView);
+	auto viewport2 = m_deviceResources->GetScreenViewport2();
+	context->RSSetViewports(1, &viewport2);
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_camera2))));
 	context->UpdateSubresource1(m_constantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
 	context->OMSetBlendState(m_blend.Get(), 0, 0xFFFFFFFF);
@@ -434,6 +435,7 @@ void Shield::CreateDeviceDependentResources(void)
 			if (TypeIs == 3)
 			{
 				CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/energy_seamless.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
+				CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/platform_seamless.dds", (ID3D11Resource **)m_texture2D.Get(), m_SRV.GetAddressOf());
 			}
 		}
 	});

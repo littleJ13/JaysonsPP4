@@ -19,6 +19,9 @@ float4 main(float4 pos : SV_POSITION, float4 uv : UV, float4 normal : NORMAL) : 
 		discard;
 	}
 
+	//How much we interpolate the two images
+
+
 	//Added Directional Light
 	float4 SurfaceNormal = normal;
 	float4 SurfacePos = pos;
